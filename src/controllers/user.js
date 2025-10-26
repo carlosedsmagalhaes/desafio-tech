@@ -3,11 +3,11 @@ import user from "../models/user.js";
 
 export default class userController {
   async login(req, res) {
-    const { email, senha } = req.body;
-    console.log(email, senha);
+    const { email, password } = req.body;
+    console.log(email, password);
     try {
       const foundUser = await user.findOne({
-        where: { email: email, senha: senha },
+        where: { email: email, password: password },
       });
 
       if (!foundUser) {
@@ -25,6 +25,22 @@ export default class userController {
       res.status(500).json({ message: "Erro ao buscar usuário", error });
     }
   }
+
+  async findById(req, res) {
+    const { id } = req.params;
+    try {
+      const foundUser = await user.findByPk(id);
+
+      if (!foundUser) {
+        return res.status(400).json({ message: "Nenhum usuário encontrado" });
+      }
+
+      res.status(201).json(foundUser);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar usuário", error });
+    }
+  }
+
   async findAll(req, res) {
     try {
       const users = await user.findAll();
@@ -40,12 +56,12 @@ export default class userController {
   }
 
   async create(req, res) {
-    const { nome, email, senha } = req.body;
+    const { name, email, password } = req.body;
     try {
       const newUser = await user.create({
-        nome,
+        name,
         email,
-        senha,
+        password,
       });
       res.status(201).json(newUser);
     } catch (error) {
@@ -55,11 +71,11 @@ export default class userController {
 
   async update(req, res) {
     const { id } = req.params;
-    const { nome, email, senha } = req.body;
+    const { name, email, password } = req.body;
 
     try {
       const updateUser = await user.update(
-        { nome, email, senha },
+        { name, email, password },
         { where: { id: id } }
       );
 
