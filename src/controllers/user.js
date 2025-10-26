@@ -1,13 +1,23 @@
 import express from "express";
 import user from "../models/user.js";
+import bcrypt from "bcryptjs";
+
+/**
+ * Representa um usuário no sistema.
+ * @class
+ */
 
 export default class userController {
+  /**
+   * Valida o login do usuário, a senha passa por um processe de descriptografia para realizar a comparação com a senha informada no bdy da requisição.
+   * @returns {json} Mensagem descritiva da validação, boolean indicando se o login foi efetuado com sucesso ou não e resultado da busca.
+   */
   async login(req, res) {
     const { email, password } = req.body;
-    console.log(email, password);
+    /* console.log(email, password); */
     try {
       const foundUser = await user.findOne({
-        where: { email: email, password: password },
+        where: { email: email },
       });
 
       if (!foundUser) {
@@ -16,16 +26,24 @@ export default class userController {
           .json({ message: "Usuário não cadastrado", login: false });
       }
 
-      res.status(201).json({
-        message: "Login realizado com sucesso",
-        login: true,
-        foundUser,
-      });
+      if (bcrypt.compareSync(password, foundUser.password)) {
+        res.status(201).json({
+          message: "Login realizado com sucesso",
+          login: true,
+          foundUser,
+        });
+      } else {
+        return res.status(400).json({ message: "Senha errada", login: false });
+      }
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar usuário", error });
     }
   }
 
+  /**
+   * Recupera o usuário a partir do seu identificador.
+   * @returns {json} Informações do usuário.
+   */
   async findById(req, res) {
     const { id } = req.params;
     try {
@@ -41,6 +59,10 @@ export default class userController {
     }
   }
 
+  /**
+   * Recupera todos os usuários.
+   * @returns {json} Informações dos usuários.
+   */
   async findAll(req, res) {
     try {
       const users = await user.findAll();
@@ -55,8 +77,14 @@ export default class userController {
     }
   }
 
+  /**
+   * Inserção de um novo usuário, a senha passa por um processo de criptografia antes da inserção na base de dados.
+   * @returns {json} Informações do usuário cadastrado.
+   */
   async create(req, res) {
-    const { name, email, password } = req.body;
+    let { name, email, password } = req.body;
+    const salt = bcrypt.genSaltSync(10);
+    password = bcrypt.hashSync(password, salt);
     try {
       const newUser = await user.create({
         name,
@@ -69,6 +97,10 @@ export default class userController {
     }
   }
 
+  /**
+   * Atualiza as informações do usuário informado.
+   * @returns {json} Informações do usuário alterado.
+   */
   async update(req, res) {
     const { id } = req.params;
     const { name, email, password } = req.body;
@@ -93,6 +125,10 @@ export default class userController {
     }
   }
 
+  /**
+   * Deleta o usuário informado.
+   * @returns {json} Indica de a remoção ocorreu com sucesso ou não.
+   */
   async delete(req, res) {
     const { id } = req.params;
     try {

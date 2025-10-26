@@ -1,8 +1,16 @@
 import express from "express";
 import sale from "../models/sale.js";
-import client from "../models/client.js"
+import client from "../models/client.js";
 
+/**
+ * Representa uma venda no sistema.
+ * @class
+ */
 export default class saleController {
+  /**
+   * Recupera a venda a partir do seu identificador, as informações do cliente vinculado a venda fazem parte do JSON de retorno.
+   * @returns {json} Informações da venda.
+   */
   async findById(req, res) {
     const { id } = req.params;
     try {
@@ -22,6 +30,10 @@ export default class saleController {
     }
   }
 
+  /**
+   * Recupera todas as vendas, as informações do cliente vinculado às vendas fazem parte do JSON de retorno.
+   * @returns {json} Informações da venda.
+   */
   async findAll(req, res) {
     try {
       const sales = await sale.findAll({
@@ -40,6 +52,10 @@ export default class saleController {
     }
   }
 
+  /**
+   * Inserção de uma nova venda.
+   * @returns {json} Informações da venda cadastrada.
+   */
   async create(req, res) {
     const { product, price, quantity, client_id } = req.body;
     try {
@@ -55,6 +71,10 @@ export default class saleController {
     }
   }
 
+  /**
+   * Atualiza as informações da venda informada.
+   * @returns {json} Informações da venda alterada.
+   */
   async update(req, res) {
     const { id } = req.params;
     const { product, price, quantity, client_id } = req.body;
@@ -79,6 +99,10 @@ export default class saleController {
     }
   }
 
+  /**
+   * Deleta a venda informada.
+   * @returns {json} Indica de a remoção ocorreu com sucesso ou não.
+   */
   async delete(req, res) {
     const { id } = req.params;
     try {

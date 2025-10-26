@@ -1,7 +1,15 @@
 import express from "express";
 import client from "../models/client.js";
 
+/**
+ * Representa um cliente no sistema.
+ * @class
+ */
 export default class clientController {
+  /**
+   * Recupera o cliente a partir do seu identificador.
+   * @returns {json} Informações do cliente.
+   */
   async findById(req, res) {
     const { id } = req.params;
     try {
@@ -17,6 +25,10 @@ export default class clientController {
     }
   }
 
+  /**
+   * Recupera todos os clientes.
+   * @returns {json} Informações dos clientes.
+   */
   async findAll(req, res) {
     try {
       const clients = await client.findAll();
@@ -31,6 +43,10 @@ export default class clientController {
     }
   }
 
+  /**
+   * Inserção de um novo cliente.
+   * @returns {json} Informações do cliente cadastrado.
+   */
   async create(req, res) {
     const { name, email, cpf } = req.body;
     try {
@@ -45,6 +61,10 @@ export default class clientController {
     }
   }
 
+  /**
+   * Atualiza as informações do cliente informado.
+   * @returns {json} Informações do cliente alterado.
+   */
   async update(req, res) {
     const { id } = req.params;
     const { name, email, cpf } = req.body;
@@ -69,6 +89,10 @@ export default class clientController {
     }
   }
 
+  /**
+   * Deleta o cliente informado.
+   * @returns {json} Indica de a remoção ocorreu com sucesso ou não.
+   */
   async delete(req, res) {
     const { id } = req.params;
     try {
